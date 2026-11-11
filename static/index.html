@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPulse | Previous Question &amp; Resource Organizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <section id="loginPage" class="login-page">
+        <div class="login-decoration">
+            <div class="brand-mark">E</div>
+            <h1>EduPulse</h1>
+            <p>Your study materials, all in one place.</p>
+            <div class="login-note"><span>01</span> Learn together. Grow together.</div>
+        </div>
+        <div class="login-panel">
+            <form id="loginForm" class="login-card">
+                <p class="eyebrow">STUDENT SPACE</p>
+                <h2>Welcome back!</h2>
+                <p class="muted">Enter your details to continue.</p>
+                <label for="studentId">Student ID</label>
+                <input id="studentId" type="text" placeholder="Enter your student ID" required>
+                <label for="email">Email Address</label>
+                <input id="email" type="email" placeholder="example@email.com" required>
+                <label for="batch">Batch</label>
+                <input id="batch" type="text" placeholder="Enter your batch" required>
+                <label for="loginSemester">Semester</label>
+                <select id="loginSemester" required>
+                    <option value="">Select semester</option>
+                    <option value="1">1st Semester</option>
+                    <option value="2">2nd Semester</option>
+                    <option value="3">3rd Semester</option>
+                </select>
+                <label for="password">Password</label>
+                <input id="password" type="password" placeholder="Enter your password" required>
+                <button type="submit" class="primary-btn">Login to EduPulse</button>
+                <p id="loginMessage" class="message" aria-live="polite"></p>
+                <p class="login-hint">First login creates your account automatically.</p>
+            </form>
+        </div>
+    </section>
+
+    <div id="appPage" class="app-layout hidden">
+        <aside class="sidebar">
+            <div class="side-brand">
+                <div class="brand-mark small">E</div>
+                <div><h2>EduPulse</h2><small>Student workspace</small></div>
+            </div>
+            <p class="nav-label">WORKSPACE</p>
+            <nav class="navigation">
+                <button class="nav-item active" data-page="dashboard"><span>⌂</span> Dashboard</button>
+                <button class="nav-item" data-page="courses"><span>▤</span> My Courses</button>
+                <button class="nav-item" data-page="resources"><span>▧</span> Resources</button>
+                <button class="nav-item" data-page="share"><span>＋</span> Share Materials</button>
+                <button class="nav-item" data-page="bookmarks"><span>☆</span> Bookmarks</button>
+                <button class="nav-item" data-page="marks"><span>✎</span> My Marks</button>
+                <button class="nav-item" data-page="attendance"><span>✓</span> Attendance</button>
+                <button class="nav-item" data-page="routine"><span>▦</span> Routine</button>
+                <button class="nav-item" data-page="result"><span>★</span> My Result</button>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="profile-mini">
+                    <div class="avatar" id="userAvatar">S</div>
+                    <div class="profile-text"><strong id="userName">Student</strong><small id="userBatch">Student account</small></div>
+                </div>
+                <button id="themeToggle" class="secondary-btn">◐ Change Theme</button>
+                <button id="logoutBtn" class="logout-btn">↪ Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div><p class="eyebrow">YOUR ACADEMIC SPACE</p><h1 id="pageTitle">Dashboard</h1></div>
+                <div class="topbar-user"><span class="status-dot"></span><span id="topUserName">Student</span></div>
+            </header>
+
+            <section id="dashboardPage" class="page-section">
+                <div class="welcome-banner">
+                    <div>
+                        <p class="banner-label">YOUR STUDY JOURNEY</p>
+                        <h2>Make every study session count.</h2>
+                        <p>Keep your notes, previous questions and study materials organised in one place.</p>
+                        <button class="light-btn" data-go="courses">Explore Courses →</button>
+                    </div>
+                    <div class="banner-symbol">✦</div>
+                </div>
+                <div class="stats-grid">
+                    <article class="stat-card"><span class="stat-icon">▤</span><p>Total Courses</p><h2 id="courseCount">26</h2></article>
+                    <article class="stat-card"><span class="stat-icon">▧</span><p>Study Resources</p><h2 id="resourceCount">0</h2></article>
+                    <article class="stat-card"><span class="stat-icon">☆</span><p>My Bookmarks</p><h2 id="bookmarkCount">0</h2></article>
+                </div>
+                <div class="section-heading"><div><p class="eyebrow">QUICK ACCESS</p><h2>Browse by semester</h2></div></div>
+                <div class="semester-grid">
+                    <button class="semester-card" data-semester="1"><span class="semester-number">01</span><strong>1st Semester</strong><small>8 courses</small></button>
+                    <button class="semester-card" data-semester="2"><span class="semester-number">02</span><strong>2nd Semester</strong><small>9 courses</small></button>
+                    <button class="semester-card" data-semester="3"><span class="semester-number">03</span><strong>3rd Semester</strong><small>9 courses</small></button>
+                </div>
+                <div class="section-heading">
+                    <div><p class="eyebrow">RECENT MATERIALS</p><h2>Recently shared</h2></div>
+                    <button class="text-btn" data-go="resources">View all →</button>
+                </div>
+                <div id="recentResources" class="resource-grid"></div>
+            </section>
+
+            <section id="coursesPage" class="page-section hidden">
+                <div class="page-intro"><h2>Explore your courses</h2><p>Select a semester to see its courses.</p></div>
+                <div class="filter-row">
+                    <label for="courseSemester">Choose semester</label>
+                    <select id="courseSemester">
+                        <option value="all">All Semesters</option>
+                        <option value="1">1st Semester</option>
+                        <option value="2">2nd Semester</option>
+                        <option value="3">3rd Semester</option>
+                    </select>
+                </div>
+                <div id="courseGrid" class="course-grid"></div>
+            </section>
+
+            <section id="resourcesPage" class="page-section hidden">
+                <div class="page-intro"><h2>Study resources</h2><p>Find notes, books and previous exam questions.</p></div>
+                <div class="resource-filters">
+                    <input id="resourceSearch" type="search" placeholder="Search materials or course...">
+                    <select id="resourceSemester">
+                        <option value="all">All Semesters</option>
+                        <option value="1">1st Semester</option>
+                        <option value="2">2nd Semester</option>
+                        <option value="3">3rd Semester</option>
+                    </select>
+                    <select id="resourceType">
+                        <option value="all">All Types</option>
+                        <option value="Notes">Notes</option>
+                        <option value="Previous Questions">Previous Questions</option>
+                        <option value="Books">Books</option>
+                        <option value="Slides">Slides</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div id="resourceGrid" class="resource-grid"></div>
+            </section>
+
+            <section id="sharePage" class="page-section hidden">
+                <div class="page-intro"><h2>Share your materials</h2><p>Upload a PDF / image or share a link.</p></div>
+                <form id="shareForm" class="form-card">
+                    <div class="form-grid">
+                        <div class="form-field full-width">
+                            <label for="materialTitle">Material title</label>
+                            <input id="materialTitle" type="text" placeholder="e.g. Midterm preparation notes" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="shareSemester">Semester</label>
+                            <select id="shareSemester" required>
+                                <option value="">Select semester</option>
+                                <option value="1">1st Semester</option>
+                                <option value="2">2nd Semester</option>
+                                <option value="3">3rd Semester</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="shareCourse">Course</label>
+                            <select id="shareCourse" required><option value="">Select course</option></select>
+                        </div>
+                        <div class="form-field">
+                            <label for="materialType">Material type</label>
+                            <select id="materialType" required>
+                                <option value="">Select type</option>
+                                <option value="Notes">Notes</option>
+                                <option value="Previous Questions">Previous Questions</option>
+                                <option value="Books">Books</option>
+                                <option value="Slides">Slides</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="examType">Exam type</label>
+                            <select id="examType">
+                                <option value="Not specified">Not specified</option>
+                                <option value="Quiz">Quiz</option>
+                                <option value="Midterm">Midterm</option>
+                                <option value="Final">Final</option>
+                                <option value="Lab">Lab</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="materialYear">Year (optional)</label>
+                            <input id="materialYear" type="number" min="2000" max="2100" placeholder="e.g. 2025">
+                        </div>
+                        <div class="form-field full-width hidden" id="fieldTopic">
+                            <label for="materialTopic">Topic (Notes)</label>
+                            <input id="materialTopic" type="text" placeholder="e.g. Linked List">
+                        </div>
+                        <div class="form-field hidden" id="fieldAuthor">
+                            <label for="materialAuthor">Author (Books)</label>
+                            <input id="materialAuthor" type="text" placeholder="e.g. Herbert Schildt">
+                        </div>
+                        <div class="form-field hidden" id="fieldEdition">
+                            <label for="materialEdition">Edition (Books)</label>
+                            <input id="materialEdition" type="text" placeholder="e.g. 7th">
+                        </div>
+                        <div class="form-field full-width hidden" id="fieldPublisher">
+                            <label for="materialPublisher">Publisher (Books)</label>
+                            <input id="materialPublisher" type="text" placeholder="e.g. McGraw Hill">
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label>Upload file (PDF / image, max 5 MB)</label>
+                            <label class="dropzone" id="dropzone" for="materialFile">
+                                <input type="file" id="materialFile" class="hidden"
+                                       accept=".pdf,application/pdf,image/png,image/jpeg,image/webp,image/gif">
+                                <span class="dz-icon">⬆</span>
+                                <span class="dz-text">Click or drag a PDF / image here</span>
+                            </label>
+                            <div id="fileChip" class="file-chip hidden"></div>
+                            <small>Optional — you can also add a link below.</small>
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="materialLink">Resource link (optional)</label>
+                            <input id="materialLink" type="url" placeholder="https://example.com/notes.pdf">
+                            <small>Add a publicly accessible file link.</small>
+                        </div>
+                    </div>
+                    <button type="submit" class="primary-btn">Submit Material</button>
+                    <p id="shareMessage" class="message" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section id="bookmarksPage" class="page-section hidden">
+                <div class="page-intro"><h2>My bookmarks</h2><p>Materials you saved for later.</p></div>
+                <div id="bookmarkGrid" class="resource-grid"></div>
+            </section>
+
+            <section id="marksPage" class="page-section hidden">
+                <div class="page-intro"><h2>My Marks</h2><p>Enter your marks and view them course-wise.</p></div>
+                <form id="distForm" class="form-card">
+                    <p class="eyebrow">TEACHER / ADMIN</p><h3>Set marks distribution</h3>
+                    <div class="form-grid">
+                        <div class="form-field full-width"><label for="distCourse">Course</label><select id="distCourse" required></select></div>
+                        <div class="form-field"><label for="ctMax">CT max</label><input id="ctMax" type="number" min="0" step="0.5" value="10"></div>
+                        <div class="form-field"><label for="midMax">Mid max</label><input id="midMax" type="number" min="0" step="0.5" value="20"></div>
+                        <div class="form-field"><label for="assignMax">Assignment max</label><input id="assignMax" type="number" min="0" step="0.5" value="10"></div>
+                        <div class="form-field"><label for="finalMax">Final max</label><input id="finalMax" type="number" min="0" step="0.5" value="60"></div>
+                    </div>
+                    <button type="submit" class="primary-btn">Save Distribution</button>
+                    <p id="distMessage" class="message" aria-live="polite"></p>
+                </form>
+                <form id="marksForm" class="form-card" style="margin-top:20px;">
+                    <p class="eyebrow">STUDENT</p><h3>Enter my marks</h3>
+                    <div class="form-grid">
+                        <div class="form-field full-width"><label for="marksCourse">Course</label><select id="marksCourse" required></select></div>
+                        <div class="form-field"><label for="ctMarks">CT marks</label><input id="ctMarks" type="number" min="0" step="0.5"></div>
+                        <div class="form-field"><label for="midMarks">Mid marks</label><input id="midMarks" type="number" min="0" step="0.5"></div>
+                        <div class="form-field"><label for="assignMarks">Assignment marks</label><input id="assignMarks" type="number" min="0" step="0.5"></div>
+                        <div class="form-field"><label for="finalMarks">Final marks</label><input id="finalMarks" type="number" min="0" step="0.5"></div>
+                    </div>
+                    <button type="submit" class="primary-btn">Save Marks</button>
+                    <p id="marksMessage" class="message" aria-live="polite"></p>
+                </form>
+                <div class="section-heading"><div><p class="eyebrow">SAVED</p><h2>My marks</h2></div></div>
+                <div id="marksTableWrap"></div>
+            </section>
+
+            <section id="attendancePage" class="page-section hidden">
+                <div class="page-intro"><h2>Attendance</h2><p>Record attendance and track your percentage.</p></div>
+                <div class="filter-row"><label for="attCourse">Course</label><select id="attCourse"></select></div>
+                <div id="attPercent" class="stats-grid"></div>
+                <form id="attForm" class="form-card">
+                    <div class="form-grid">
+                        <div class="form-field"><label for="attDate">Class date</label><input id="attDate" type="date" required></div>
+                        <div class="form-field"><label for="attStatus">Status</label>
+                            <select id="attStatus"><option>Present</option><option>Absent</option><option>Late</option></select>
+                        </div>
+                    </div>
+                    <button type="submit" class="primary-btn">Add Attendance</button>
+                    <p id="attMessage" class="message" aria-live="polite"></p>
+                </form>
+                <div class="section-heading"><div><p class="eyebrow">RECORDS</p><h2>My attendance</h2></div></div>
+                <div id="attTableWrap"></div>
+            </section>
+
+            <section id="routinePage" class="page-section hidden">
+                <div class="page-intro"><h2>Class Routine</h2><p>Weekly class schedule.</p></div>
+                <form id="routineForm" class="form-card">
+                    <p class="eyebrow">TEACHER / ADMIN</p>
+                    <div class="form-grid">
+                        <div class="form-field full-width"><label for="routineCourse">Course</label><select id="routineCourse" required></select></div>
+                        <div class="form-field"><label for="routineDay">Day</label>
+                            <select id="routineDay"><option>Saturday</option><option>Sunday</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select>
+                        </div>
+                        <div class="form-field"><label for="routineRoom">Room</label><input id="routineRoom" type="text" placeholder="e.g. 301"></div>
+                        <div class="form-field"><label for="routineStart">Start time</label><input id="routineStart" type="time" required></div>
+                        <div class="form-field"><label for="routineEnd">End time</label><input id="routineEnd" type="time" required></div>
+                        <div class="form-field full-width"><label for="routineTeacher">Teacher</label><input id="routineTeacher" type="text" placeholder="e.g. Dr. Rahman"></div>
+                    </div>
+                    <button type="submit" class="primary-btn">Add Routine</button>
+                    <p id="routineMessage" class="message" aria-live="polite"></p>
+                </form>
+                <div class="section-heading"><div><p class="eyebrow">SCHEDULE</p><h2>Weekly routine</h2></div></div>
+                <div id="routineTableWrap"></div>
+            </section>
+
+            <section id="resultPage" class="page-section hidden">
+                <div class="page-intro"><h2>My Result</h2><p>Your course-wise grades and GPA.</p></div>
+                <div class="filter-row"><button id="calcResultBtn" class="primary-btn" style="max-width:220px;margin-top:0;">Calculate Result</button></div>
+                <div id="resultSummary" class="stats-grid"></div>
+                <div id="resultTableWrap"></div>
+            </section>
+
+            <footer class="page-footer">EduPulse · Learn together, grow together.</footer>
+        </main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="script.js"></script>
+</body>
+</html>
