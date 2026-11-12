@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduPulse | Previous Question &amp; Resource Organizer</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=99">
 </head>
 <body>
     <section id="loginPage" class="login-page">
@@ -37,6 +37,29 @@
                 <button type="submit" class="primary-btn">Login to EduPulse</button>
                 <p id="loginMessage" class="message" aria-live="polite"></p>
                 <p class="login-hint">First login creates your account automatically.</p>
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="#" id="showForgotLink" style="color: var(--primary); font-size: 12px; text-decoration: none;">Forgot Password? Reset here</a>
+                </p>
+            </form>
+
+            <!-- Forgot Password Form (Hidden by default) -->
+            <form id="resetForm" class="login-card hidden">
+                <p class="eyebrow">PASSWORD RESET</p>
+                <h2>Reset Password</h2>
+                <p class="muted">Enter your roll and a new password.</p>
+                
+                <label for="resetRoll">Student Roll</label>
+                <input id="resetRoll" type="text" placeholder="Enter your student roll" required>
+                
+                <label for="resetPass">New Password</label>
+                <input id="resetPass" type="password" placeholder="Enter new password (min 6 chars)" required>
+                
+                <button type="submit" class="primary-btn">Reset Password</button>
+                <p id="resetMessage" class="message" aria-live="polite"></p>
+                
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="#" id="backToLogin" style="color: var(--primary); font-size: 12px; text-decoration: none;">← Back to Login</a>
+                </p>
             </form>
         </div>
     </section>

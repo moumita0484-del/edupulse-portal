@@ -119,13 +119,16 @@ def register(data: RegisterData):
         raise HTTPException(400, "This roll or email is already registered.")
     return {"message": "Account created. Please log in."}
 
-# ✅ FIXED: LoginData now accepts batch and semester for auto-creation
 class LoginData(BaseModel):
     student_roll: str
     email: str
     batch: str = ""
     semester: int = 1
     password: str
+
+class ResetData(BaseModel):
+    student_roll: str
+    new_password: str
 
 @app.post("/api/login")
 def login(data: LoginData):
@@ -135,7 +138,6 @@ def login(data: LoginData):
     with engine.begin() as conn:
         row = conn.execute(text("SELECT * FROM student WHERE student_roll=:r"), {"r": roll}).mappings().first()
         
-        # ✅ FIXED: Auto-create account if user doesn't exist (Easy Demo/Login)
         if not row:
             if len(data.password) < 6:
                 raise HTTPException(400, "Password must be at least 6 characters.")
@@ -150,14 +152,11 @@ def login(data: LoginData):
                 "s": sem_name, 
                 "p": hash_password(data.password)
             })
-            # Fetch the newly created row
             row = conn.execute(text("SELECT * FROM student WHERE student_roll=:r"), {"r": roll}).mappings().first()
         
-        # Verify credentials for existing users
         if row["email"] != email or not row["password_hash"] or not check_password(data.password, row["password_hash"]):
             raise HTTPException(401, "Invalid roll, email or password.")
         
-        # Clean up old tokens
         conn.execute(text("""
             DELETE FROM login_token
             WHERE student_id=:s AND created_at < NOW() - INTERVAL 7 DAY
@@ -175,6 +174,26 @@ def login(data: LoginData):
         "semester": sem_to_int(row["semester"]),
         "role": row.get("role", "student"),
     }
+
+@app.post("/api/reset-password")
+def reset_password(data: ResetData):
+    roll = data.student_roll.strip()
+    new_pass = data.new_password.strip()
+    
+    if len(new_pass) < 6:
+        raise HTTPException(400, "Password must be at least 6 characters.")
+        
+    new_hash = hash_password(new_pass)
+    
+    with engine.begin() as conn:
+        result = conn.execute(
+            text("UPDATE student SET password_hash=:h WHERE student_roll=:r"),
+            {"h": new_hash, "r": roll}
+        )
+        if result.rowcount == 0:
+            raise HTTPException(404, "Student not found with this roll.")
+            
+    return {"message": "Password reset successful! Please login with the new password."}
 
 @app.post("/api/logout")
 def logout(creds: Optional[HTTPAuthorizationCredentials] = Depends(bearer)):

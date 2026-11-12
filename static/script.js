@@ -63,7 +63,7 @@ async function loadResources() {
 async function loadBookmarks() {
     if (!currentUser) return;
     try {
-        const r = await fetch(`${API}/bookmarks/${encodeURIComponent(currentUser.studentId)}`);
+        const r = await fetch(`${API}/bookmarks/me`, { headers: authHeaders() });
         const d = await r.json();
         bookmarks[currentUser.studentId] = Array.isArray(d) ? d : [];
     } catch { showToast("Could not load bookmarks."); }
@@ -491,18 +491,95 @@ $("calcResultBtn").addEventListener("click", async () => {
     } catch { showToast("Cannot connect to the server."); }
 });
 
-// ===== THEME / LOGOUT =====
+// ===== THEME & LOGOUT =====
 $("themeToggle").addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
     localStorage.setItem("edupulse_dark_mode", String(document.body.classList.contains("dark-mode")));
 });
 if (localStorage.getItem("edupulse_dark_mode") === "true") document.body.classList.add("dark-mode");
-$("logoutBtn").addEventListener("click", () => {
-    currentUser = null; selectedFile = null; renderFileChip();
-    $("loginForm").reset(); $("loginMessage").textContent = "";
-    $("appPage").classList.add("hidden"); $("loginPage").classList.remove("hidden");
-    showToast("You have logged out.");
+
+$("logoutBtn").addEventListener("click", async () => {
+    if (currentUser?.token) {
+        try {
+            await fetch(`${API}/logout`, {
+                method: "POST",
+                headers: { "Authorization": "Bearer " + currentUser.token }
+            });
+        } catch (e) {
+            console.error("Logout error", e);
+        }
+    }
+    currentUser = null;
+    selectedFile = null;
+    renderFileChip();
+    $("loginForm").reset();
+    $("loginMessage").textContent = "";
+    $("appPage").classList.add("hidden");
+    $("loginPage").classList.remove("hidden");
+    showToast("You have logged out successfully.");
 });
+
+// ===== FORGOT PASSWORD LOGIC =====
+const showForgotLink = document.getElementById('showForgotLink');
+const backToLogin = document.getElementById('backToLogin');
+const loginForm = document.getElementById('loginForm');
+const resetForm = document.getElementById('resetForm');
+
+if (showForgotLink && backToLogin) {
+    showForgotLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginForm.classList.add('hidden');
+        resetForm.classList.remove('hidden');
+    });
+
+    backToLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+        document.getElementById('resetMessage').textContent = "";
+    });
+}
+
+if (resetForm) {
+    resetForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const roll = document.getElementById('resetRoll').value.trim();
+        const newPass = document.getElementById('resetPass').value;
+        const msg = document.getElementById('resetMessage');
+
+        if (!roll || !newPass) {
+            msg.textContent = "Please fill in all fields.";
+            msg.className = "message";
+            return;
+        }
+
+        try {
+            const r = await fetch(`${API}/reset-password`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ student_roll: roll, new_password: newPass })
+            });
+            const d = await r.json();
+            
+            if (!r.ok) {
+                msg.textContent = d.detail || "Reset failed.";
+                msg.className = "message";
+            } else {
+                msg.textContent = d.message;
+                msg.className = "message success";
+                resetForm.reset();
+                setTimeout(() => {
+                    resetForm.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
+                    msg.textContent = "";
+                }, 2500);
+            }
+        } catch {
+            msg.textContent = "Cannot connect to the server.";
+            msg.className = "message";
+        }
+    });
+}
 
 updateTypeFields();
 loadCourses();
