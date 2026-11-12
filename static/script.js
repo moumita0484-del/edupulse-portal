@@ -120,12 +120,13 @@ function renderShareCourseOptions() {
     $("shareCourse").innerHTML = '<option value="">Select course</option>' +
         list.map(c => `<option value="${escapeHTML(c.name)}">${escapeHTML(c.name)}</option>`).join("");
 }
+
 function renderResources(targetId, list) {
     const el = $(targetId);
     if (!list.length) { el.innerHTML = '<div class="empty-state">No materials found yet.</div>'; return; }
     el.innerHTML = list.map(item => {
         const saved = getUserBookmarks().includes(item.id);
-        const mine = currentUser && Number(item.owner_id) === Number(currentUser.dbId);
+        const mine = currentUser && (Number(item.owner_id) === Number(currentUser.dbId) || currentUser.role === 'admin');
         return `
         <article class="resource-card">
             <div class="resource-card-top"><div>
@@ -150,6 +151,7 @@ function renderResources(targetId, list) {
         </article>`;
     }).join("");
 }
+
 function renderResourceFilters() {
     const q = $("resourceSearch").value.trim().toLowerCase();
     const sem = $("resourceSemester").value, type = $("resourceType").value;
@@ -216,7 +218,7 @@ $("loginForm").addEventListener("submit", async e => {
             body: JSON.stringify({ student_roll: studentId, email, batch, semester, password }) });
         const d = await r.json();
         if (!r.ok) return showMessage(msg, d.detail || "Login failed.");
-        await enterDashboard({ studentId: d.student_roll, dbId: d.student_id, email: d.email, batch: d.batch, semester: d.semester, token: d.token });
+        await enterDashboard({ studentId: d.student_roll, dbId: d.student_id, email: d.email, batch: d.batch, semester: d.semester, token: d.token, role: d.role });
         showToast(d.message === "Account created" ? "Account created successfully!" : "Welcome back!");
     } catch { showMessage(msg, "Cannot connect to the server. Is it running?"); }
 });
@@ -273,12 +275,14 @@ document.addEventListener("click", async e => {
     }
     const of = e.target.closest("[data-open-file]");
     if (of) { window.open(`${API}/resources/${of.dataset.openFile}/file`, "_blank", "noopener,noreferrer"); return; }
+    
     const bk = e.target.closest("[data-bookmark]");
     if (bk) {
         if (!currentUser) return;
         const id = bk.dataset.bookmark, saved = getUserBookmarks();
         try {
-            const r = await fetch(`${API}/bookmarks/toggle`, { method: "POST", headers: { "Content-Type": "application/json" },
+            // ✅ FIXED: Ekhon authHeaders() use kora hocche, tai token pathano hobe
+            const r = await fetch(`${API}/bookmarks/toggle`, { method: "POST", headers: authHeaders(),
                 body: JSON.stringify({ student_roll: currentUser.studentId, resource_id: Number(id) }) });
             const d = await r.json();
             if (!r.ok) return showToast(d.detail || "Could not update bookmark.");
@@ -288,6 +292,7 @@ document.addEventListener("click", async e => {
         } catch { showToast("Cannot connect to the server."); }
         return;
     }
+    
     const lk = e.target.closest("[data-open-link]");
     if (lk) {
         const item = resources.find(r => r.id === lk.dataset.openLink);
